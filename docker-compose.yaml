@@ -1,0 +1,42 @@
+version: '3.1'
+
+services:
+
+  app:
+    build: ./wordpress
+    restart: always
+    ports:
+      - 18080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: DBUSER
+      WORDPRESS_DB_PASSWORD: DBPASS
+      WORDPRESS_DB_NAME: DBNAME
+    volumes:
+      - wordpress:/var/www/html
+
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MARIADB_DATABASE: DBNAME
+      MARIADB_USER: DBUSER
+      MARIADB_PASSWORD: DBPASS
+      MARIADB_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+
+networks:
+  wordpress-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-wordpress
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config:
+        - subnet: ${IPV4_NETWORK:-172.31.128}.0/24
+
+volumes:
+  wordpress:
+  db:
