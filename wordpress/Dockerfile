@@ -1,5 +1,10 @@
 FROM wordpress
 
+# Install redis
+RUN set -eux; \
+	pecl install redis-5.3.7 \
+	&& docker-php-ext-enable redis
+
 # Add custom php values to .htaccess
 RUN set -eux; \
 	{ \

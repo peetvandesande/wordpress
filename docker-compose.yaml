@@ -12,6 +12,10 @@ services:
       WORDPRESS_DB_USER: ${DBUSER}
       WORDPRESS_DB_PASSWORD: ${DBPASS}
       WORDPRESS_DB_NAME: ${DBNAME}
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_REDIS_HOST', 'redis');
+        define('WP_CACHE_KEY_SALT', '${CACHE_KEY_SALT}');
+        define('WP_CACHE', true);
     volumes:
       - wordpress:/var/www/html
 
@@ -25,6 +29,10 @@ services:
       MARIADB_RANDOM_ROOT_PASSWORD: '1'
     volumes:
       - db:/var/lib/mysql
+
+  redis:
+    image: redis:6.2
+    restart: always
 
 volumes:
   wordpress:
