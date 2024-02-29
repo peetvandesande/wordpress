@@ -7,6 +7,8 @@ This container is meant to run behind a reverse proxy so there is no SSL support
 
 Use 'setup.sh' to create a Docker environment file before starting up the containers.  
 
+When run in the 'test' role (choose during setup), a phpMyAdmin container is added.
+
 # Install  
 ./setup.sh  
 docker compose up -d
