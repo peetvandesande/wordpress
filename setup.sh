@@ -1,11 +1,22 @@
 #!/bin/bash
 #
 randompw () {
-	</dev/urandom tr -dc '12345!@#$%qwertQWERTasdfgASDFGzxcvbZXCVB' | head -c16; echo ""
+	</dev/urandom tr -dc '12345!@#%qwertQWERTasdfgASDFGzxcvbZXCVB' | head -c16; echo ""
 }
 
 randomstring () {
 	</dev/urandom tr -dc '12345qwertQWERTasdfgASDFGzxcvbZXCVB' | head -c8; echo ""
+}
+
+create_symlink () {
+	ln -s docker-compose-${1}.yaml docker-compose.yaml
+}
+
+choose_role () {
+	while [[ $role != "test" ]] && [[ $role != "prod" ]]; do
+		read -p "Enter role [prod|test]: " role	
+	done
+	echo "${role}"
 }
 
 ENV_FILE=${1:-".env"}
@@ -19,6 +30,7 @@ else
 	dbpass=`randompw`
 	cache_key_salt=`randomstring`
 
+	role=`choose_role`
 	read -p "Enter database name [${dbname_default}]: " dbname
 	read -p "Enter database user [${dbuser_default}]: " dbuser
 	read -p "Enter webserver port [${web_port_default}]: " web_port
@@ -33,7 +45,21 @@ else
 	echo "WEB_PORT=${web_port}" >> ${ENV_FILE}
 	echo "CACHE_KEY_SALT=${cache_key_salt}" >> ${ENV_FILE}
 
+	if [[ ${role} == "test" ]]; then
+		mysql_root_pw=`randompw`
+		echo "MARIADB_ROOT_PASSWORD=${mysql_root_pw}" >> ${ENV_FILE}
+
+		pma_port_default=11080
+		read -p "Enter pmaserver port [${pma_port_default}]: " pma_port
+		pma_port=${pma_port:-$pma_port_default}
+		echo "PMA_PORT=${pma_port}" >> ${ENV_FILE}
+	fi
+
 	echo ""
 	echo "Done creating ${ENV_FILE}:"
 	cat ${ENV_FILE}
+
+	`create_symlink ${role}`
+
+	echo ""
 fi
