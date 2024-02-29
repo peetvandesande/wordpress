@@ -18,6 +18,7 @@ services:
         define('WP_CACHE', true);
     volumes:
       - wordpress:/var/www/html
+      - wp-content:/var/www/html/wp-content
 
   db:
     image: mariadb
@@ -36,4 +37,5 @@ services:
 
 volumes:
   wordpress:
+  wp-content:
   db:
