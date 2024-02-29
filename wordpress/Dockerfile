@@ -11,8 +11,8 @@ RUN set -eux; \
 		echo '# BEGIN custom_PHP_values'; \
 		echo ''; \
 		echo '# Allowing for big uploads (restore backups)'; \
-		echo 'php_value upload_max_filesize 200M'; \
-		echo 'php_value post_max_size 200M'; \
+		echo 'php_value upload_max_filesize 500M'; \
+		echo 'php_value post_max_size 500M'; \
 		echo 'php_value memory_limit 256M'; \
 		echo 'php_value max_execution_time 300'; \
 		echo 'php_value max_input_time 300'; \
