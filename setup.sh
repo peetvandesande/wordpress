@@ -26,7 +26,7 @@ if [ -f ${ENV_FILE} ]; then
 else
 	dbname_default=wordpress
 	dbuser_default=wp-user
-	web_port_default=8080
+	web_port_default=80
 	dbpass=`randompw`
 	cache_key_salt=`randomstring`
 
@@ -43,9 +43,13 @@ else
 	echo "DBUSER=${dbuser}" >> ${ENV_FILE}
 	echo "DBPASS=${dbpass}" >> ${ENV_FILE}
 	echo "WEB_PORT=${web_port}" >> ${ENV_FILE}
-	echo "CACHE_KEY_SALT=${cache_key_salt}" >> ${ENV_FILE}
 
 	if [[ ${role} == "test" ]]; then
+		ssl_port_default=443
+		read -p "Enter sslserver port [${ssl_port_default}]: " ssl_port
+		ssl_port=${ssl_port:-$ssl_port_default}
+		echo "SSL_PORT=${ssl_port}" >> ${ENV_FILE}
+
 		mysql_root_pw=`randompw`
 		echo "MARIADB_ROOT_PASSWORD=${mysql_root_pw}" >> ${ENV_FILE}
 
@@ -55,11 +59,9 @@ else
 		echo "PMA_PORT=${pma_port}" >> ${ENV_FILE}
 	fi
 
-	echo ""
-	echo "Done creating ${ENV_FILE}:"
-	cat ${ENV_FILE}
+	echo "CACHE_KEY_SALT=${cache_key_salt}" >> ${ENV_FILE}
 
 	`create_symlink ${role}`
 
-	echo ""
+	echo "Ready. Use: docker compose up [-d]"
 fi
