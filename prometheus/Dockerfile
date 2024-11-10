@@ -1,4 +1,4 @@
-FROM wordpress:6-apache
+FROM wordpress
 
 # Install redis
 RUN set -eux; \
@@ -22,3 +22,11 @@ RUN set -eux; \
 
 # Bring in custom php.ini
 COPY php.ini-production /usr/local/etc/php/php.ini
+
+# ---
+# Enable SSL
+RUN set -eux; \
+	apt-get update; \
+	apt-get install ssl-cert; \
+	a2enmod ssl; \
+	a2ensite default-ssl

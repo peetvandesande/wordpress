@@ -1,4 +1,4 @@
-FROM wordpress
+FROM wordpress:6-apache
 
 # Install redis
 RUN set -eux; \
@@ -30,3 +30,8 @@ RUN set -eux; \
 	apt-get install ssl-cert; \
 	a2enmod ssl; \
 	a2ensite default-ssl
+
+#
+# Enable mod_status
+RUN set -eux; \
+	sed -i 's/Require local/&\n\tRequire ip 10.0.0.0\/8 172.16.0.0\/12 192.168.0.0\/16/' /etc/apache2/mods-enabled/status.conf

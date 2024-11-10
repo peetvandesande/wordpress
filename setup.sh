@@ -22,11 +22,18 @@ choose_role () {
 ENV_FILE=${1:-".env"}
 
 if [ -f ${ENV_FILE} ]; then
-	echo "${ENV_FILE} already exists. Remove it before running this."
+	echo "${ENV_FILE} already exists."
+	read -p "Reset environment? [y/N] : " reset
+	reset=${reset:-N}
+	if [[ ${reset} == "y" ]]; then
+		rm .env
+		rm docker_compose.yaml
+	fi
 else
 	dbname_default=wordpress
 	dbuser_default=wp-user
 	web_port_default=80
+	prom_port_default=9090
 	dbpass=`randompw`
 	cache_key_salt=`randomstring`
 
@@ -34,15 +41,18 @@ else
 	read -p "Enter database name [${dbname_default}]: " dbname
 	read -p "Enter database user [${dbuser_default}]: " dbuser
 	read -p "Enter webserver port [${web_port_default}]: " web_port
+	read -p "Enter Prometheus port [${prom_port_default}]: " prom_port
 
 	dbname=${dbname:-$dbname_default}
 	dbuser=${dbuser:-$dbuser_default}
 	web_port=${web_port:-$web_port_default}
+	prom_port=${prom_port:-$prom_port_default}
 
 	echo "DBNAME=${dbname}" > ${ENV_FILE}
 	echo "DBUSER=${dbuser}" >> ${ENV_FILE}
 	echo "DBPASS=${dbpass}" >> ${ENV_FILE}
 	echo "WEB_PORT=${web_port}" >> ${ENV_FILE}
+	echo "PROM_PORT=${prom_port}" >> ${ENV_FILE}
 
 	if [[ ${role} == "test" ]]; then
 		ssl_port_default=443
