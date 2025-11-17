@@ -1,3 +1,4 @@
 .env
+app.env
 reset
 docker-compose.yaml
