@@ -19,7 +19,7 @@ choose_role () {
 	echo "${role}"
 }
 
-ENV_FILE=${1:-"app.env"}
+ENV_FILE=${1:-".env"}
 
 if [ -f ${ENV_FILE} ]; then
 	echo "${ENV_FILE} already exists."
