@@ -1,10 +1,22 @@
 services:
 
-  app:
-    build: ./app-prod
-    restart: always
+  nginx:
+    image: nginx:mainline-alpine
+    restart: unless-stopped
+    depends_on:
+      - wordpress
     ports:
-      - ${WEB_PORT:-80}:80
+      - 80:80
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - wp-content:/var/www/html/wp-content:ro
+
+  wordpress:
+    image: wordpress:php8.4-fpm
+    restart: unless-stopped
+    env_file:
+      - app.env
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: ${DBUSER}
@@ -15,25 +27,47 @@ services:
         define('WP_CACHE_KEY_SALT', '${CACHE_KEY_SALT}');
         define('WP_CACHE', true);
     volumes:
-      - wordpress:/var/www/html
       - wp-content:/var/www/html/wp-content
+      - ./wordpress/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+    depends_on:
+      - db
+      - redis
+
+#   app:
+#     build: ./app-prod
+#     restart: unless-stopped
+#     ports:
+#       - ${WEB_PORT:-80}:80
+#     environment:
+#       WORDPRESS_DB_HOST: db
+#       WORDPRESS_DB_USER: ${DBUSER}
+#       WORDPRESS_DB_PASSWORD: ${DBPASS}
+#       WORDPRESS_DB_NAME: ${DBNAME}
+#       WORDPRESS_CONFIG_EXTRA: |
+#         define('WP_REDIS_HOST', 'redis');
+#         define('WP_CACHE_KEY_SALT', '${CACHE_KEY_SALT}');
+#         define('WP_CACHE', true);
+#     volumes:
+#       - wordpress:/var/www/html
+#       - wp-content:/var/www/html/wp-content
 
   db:
     image: mariadb:11.1
-    restart: always
+    restart: unless-stopped
     environment:
       MARIADB_DATABASE: ${DBNAME}
       MARIADB_USER: ${DBUSER}
       MARIADB_PASSWORD: ${DBPASS}
       MARIADB_RANDOM_ROOT_PASSWORD: '1'
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
     volumes:
-      - db:/var/lib/mysql
+      - db-data:/var/lib/mysql
 
   redis:
-    image: redis:6.2
-    restart: always
+    image: redis:7-alpine
+    restart: unless-stopped
 
 volumes:
   wordpress:
   wp-content:
-  db:
+  db-data:
