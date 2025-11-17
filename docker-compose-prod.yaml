@@ -33,7 +33,7 @@ services:
       - redis
 
   db:
-    image: mariadb:11.1
+    image: mariadb:11
     restart: unless-stopped
     environment:
       MARIADB_DATABASE: ${DBNAME}
