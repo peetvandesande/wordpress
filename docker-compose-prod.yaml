@@ -15,7 +15,7 @@ services:
     image: wordpress:php8.4-fpm
     restart: unless-stopped
     env_file:
-      - app.env
+      - .env
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: ${DBUSER}
@@ -35,6 +35,8 @@ services:
   db:
     image: mariadb:11
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       MARIADB_DATABASE: ${DBNAME}
       MARIADB_USER: ${DBUSER}
