@@ -13,19 +13,19 @@ docker compose up -d
 
 # WP-CLI
 For easy access to the WP-CLI, use an alias:
-`echo "alias wp='docker compose exec -it wordpress wp'" >> ~/.bash_aliases`
+`echo "alias wp='docker compose run --rm wordpress-cli'" >> ~/.bash_aliases`
 
 ## Check for updates
-[docker compose exec wordpress] wp core check-update
+wp core check-update
 
 ## Minor core updates only (safe):
-[docker compose exec wordpress] wp core update --minor
+wp core update --minor
 
 ## Plugin updates:
-[docker compose exec wordpress] wp plugin update --all
+wp plugin update --all
 
 ## Theme updates:
-[docker compose exec wordpress] wp theme update --all
+wp theme update --all
 
 ## Search and replace (like, when moving from test (old domain=http://example-test.com/) to production (new domain=https://example.com/)
-[docker compose exec wordpress] wp search-replace 'example-test' 'example' --dry-run
+wp search-replace 'example-test' 'example' --dry-run
