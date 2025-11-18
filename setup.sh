@@ -73,7 +73,7 @@ esac
 
 echo "USE_TRAEFIK=${use_traefik}"          >> "${ENV_FILE}"
 
-compose_file="docker-compose.yaml"
+compose_file="docker-compose.yml"
 
 if [ -f "${compose_file}" ]; then
     if [ "${use_traefik}" = true ]; then
