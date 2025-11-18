@@ -29,30 +29,30 @@ services:
       - wordpress:/var/www/html:ro
     networks:
       - default # To communicate within the stack
-      - proxy   # To communicate with Traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
+      # - proxy   # To communicate with Traefik
+    # labels:
+      # - "traefik.enable=true"
+      # - "traefik.docker.network=proxy"
 
       #   --- Main HTTPS router for www.<domain> ---
-      - "traefik.http.routers.${SITE_ID}_public.rule=Host(`${WWW_DOMAIN}`)"
-      - "traefik.http.routers.${SITE_ID}_public.entrypoints=websecure"
-      - "traefik.http.routers.${SITE_ID}_public.tls=true"
-      - "traefik.http.routers.${SITE_ID}_public.service=${SITE_ID}_wp"
+      # - "traefik.http.routers.${SITE_ID}_public.rule=Host(`${WWW_DOMAIN}`)"
+      # - "traefik.http.routers.${SITE_ID}_public.entrypoints=websecure"
+      # - "traefik.http.routers.${SITE_ID}_public.tls=true"
+      # - "traefik.http.routers.${SITE_ID}_public.service=${SITE_ID}_wp"
 
       #   --- Redirect bare domain → https://www.<domain> ---
-      - "traefik.http.routers.${SITE_ID}_redirect_www.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.${SITE_ID}_redirect_www.entrypoints=websecure"
-      - "traefik.http.routers.${SITE_ID}_redirect_www.tls=true"
-      - "traefik.http.routers.${SITE_ID}_redirect_www.middlewares=${SITE_ID}-to-www"
+      # - "traefik.http.routers.${SITE_ID}_redirect_www.rule=Host(`${DOMAIN}`)"
+      # - "traefik.http.routers.${SITE_ID}_redirect_www.entrypoints=websecure"
+      # - "traefik.http.routers.${SITE_ID}_redirect_www.tls=true"
+      # - "traefik.http.routers.${SITE_ID}_redirect_www.middlewares=${SITE_ID}-to-www"
 
-      - "traefik.http.middlewares.${SITE_ID}-to-www.redirectregex.regex=^https://${DOMAIN_REGEX}(.*)"
-      - "traefik.http.middlewares.${SITE_ID}-to-www.redirectregex.replacement=https://${WWW_DOMAIN}$1"
-      - "traefik.http.middlewares.${SITE_ID}-to-www.redirectregex.permanent=true"
+      # - "traefik.http.middlewares.${SITE_ID}-to-www.redirectregex.regex=^https://${DOMAIN_REGEX}(.*)"
+      # - "traefik.http.middlewares.${SITE_ID}-to-www.redirectregex.replacement=https://${WWW_DOMAIN}$1"
+      # - "traefik.http.middlewares.${SITE_ID}-to-www.redirectregex.permanent=true"
 
       #   --- Service: nginx listens on 80 for Traefik ---
-      - "traefik.http.services.${SITE_ID}_wp.loadbalancer.server.port=80"
-      - "traefik.http.services.${SITE_ID}_wp.loadbalancer.server.scheme=http"
+      # - "traefik.http.services.${SITE_ID}_wp.loadbalancer.server.port=80"
+      # - "traefik.http.services.${SITE_ID}_wp.loadbalancer.server.scheme=http"
 
   wordpress:
     <<: *wordpress-common
@@ -128,6 +128,6 @@ volumes:
 networks:
   default:
     driver: bridge
-proxy:
-  external: true
+# proxy:
+  # external: true
 
