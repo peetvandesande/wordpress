@@ -80,6 +80,7 @@ services:
       - ./nginx/conf.d:/local/nginx/conf.d:ro
       - ./nginx/nginx.conf:/local/nginx/nginx.conf:ro
       - ./wordpress/php/uploads.ini:/local/wordpress/php/uploads.ini:ro
+      - ./.env:/local/.env:ro
       - wordpress:/var/www/html:ro
       - /var/backups:/backups
     depends_on:
