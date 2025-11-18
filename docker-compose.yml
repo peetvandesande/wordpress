@@ -89,8 +89,6 @@ services:
 
   mariadb-backup:
     image: peetvandesande/mariadb-backup
-    env_file:
-      - .env
     environment:
       CHOWN_UID : 34
       CHOWN_GID : 34
