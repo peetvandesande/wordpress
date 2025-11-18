@@ -1,16 +1,34 @@
 # wordpress
-Wordpress + MariaDB and Redis DB Cache containers with custom PHP settings
+Wordpress + MariaDB and Redis DB Cache containers with custom PHP settings  
 
-Based on https://github.com/docker-library/wordpress/tree/ac65dab91d64f611e4fa89b5e92903e163d24572/latest/php8.2
+Much inspiration taken from [a blog on dchost.com](https://www.dchost.com/blog/en/wordpress-on-docker-compose-without-the-drama-nginx-mariadb-redis-persistent-volumes-auto%E2%80%91backups-and-a-calm-update-flow/).  
 
-This container is meant to run behind a reverse proxy so there is no SSL support.  
+This version is meant to run behind a reverse proxy so there is no SSL support. I'd recommend traefik for reverse proxy and SSL offloading; the labels are already in the docker file to work with a Traefik container in a different environment.  
 
 Use 'setup.sh' to create a Docker environment file before starting up the containers.  
 
-When run in the 'test' role (choose during setup), a phpMyAdmin container is added.
-
 # Install  
+```
 ./setup.sh  
 docker compose up -d
+```
 
+# WP-CLI
+For easy access to the WP-CLI, use an alias:  
+`echo "alias wp='docker compose run --rm wordpress-cli'" >> ~/.bash_aliases && source ~/.bash_aliases`
 
+## Check for updates
+`wp core check-update`
+
+## Minor core updates only (safe):
+`wp core update --minor`
+
+## Plugin updates:
+`wp plugin update --all`
+
+## Theme updates:
+`wp theme update --all`
+
+## Search and replace
+(like, when moving from test (old domain=http://example-test.com/) to production (new domain=https://example.com/)  
+`wp search-replace 'example-test' 'example' --dry-run`
