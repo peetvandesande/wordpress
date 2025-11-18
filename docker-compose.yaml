@@ -129,5 +129,5 @@ networks:
   default:
     driver: bridge
 proxy:
-    external: true
+  external: true
 
