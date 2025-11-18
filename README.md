@@ -1,19 +1,21 @@
 # wordpress
 Wordpress + MariaDB and Redis DB Cache containers with custom PHP settings  
 
-Much inspiration taken from: https://www.dchost.com/blog/en/wordpress-on-docker-compose-without-the-drama-nginx-mariadb-redis-persistent-volumes-auto%E2%80%91backups-and-a-calm-update-flow/  
+Much inspiration taken from [a blog on dchost.com](https://www.dchost.com/blog/en/wordpress-on-docker-compose-without-the-drama-nginx-mariadb-redis-persistent-volumes-auto%E2%80%91backups-and-a-calm-update-flow/).  
 
 This version is meant to run behind a reverse proxy so there is no SSL support. I'd recommend traefik for reverse proxy and SSL offloading; the labels are already in the docker file to work with a Traefik container in a different environment.  
 
 Use 'setup.sh' to create a Docker environment file before starting up the containers.  
 
 # Install  
-`./setup.sh  
-docker compose up -d`
+```
+./setup.sh  
+docker compose up -d
+```
 
 # WP-CLI
 For easy access to the WP-CLI, use an alias:  
-`echo "alias wp='docker compose run --rm wordpress-cli'" >> ~/.bash_aliases`
+`echo "alias wp='docker compose run --rm wordpress-cli'" >> ~/.bash_aliases && source ~/.bash_aliases`
 
 ## Check for updates
 `wp core check-update`
