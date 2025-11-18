@@ -3,11 +3,9 @@ Wordpress + MariaDB and Redis DB Cache containers with custom PHP settings
 
 Much inspiration taken from: https://www.dchost.com/blog/en/wordpress-on-docker-compose-without-the-drama-nginx-mariadb-redis-persistent-volumes-auto%E2%80%91backups-and-a-calm-update-flow/
 
-The production version is meant to run behind a reverse proxy so there is no SSL support.  
+This version is meant to run behind a reverse proxy so there is no SSL support. I'd recommend traefik for reverse proxy and SSL offloading.
 
 Use 'setup.sh' to create a Docker environment file before starting up the containers.  
-
-When run in the 'test' role (choose during setup), a phpMyAdmin container and self-signed SSL certificate is added
 
 # Install  
 ./setup.sh  
