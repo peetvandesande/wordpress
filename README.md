@@ -13,7 +13,7 @@ docker compose up -d
 
 # WP-CLI
 For easy access to the WP-CLI, use an alias:
-`echo "alias wp='docker exec -it wordpress wp' >> ~/.bash_aliases`
+`echo "alias wp='docker compose exec -it wordpress wp'" >> ~/.bash_aliases`
 
 ## Check for updates
 [docker compose exec wordpress] wp core check-update
