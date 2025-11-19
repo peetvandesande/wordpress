@@ -48,7 +48,7 @@ domain=${domain#www.}
 # Regex-safe variants: replace "." with "\."
 domain_regex="${domain//./\\.}"
 www_domain="www.${domain}"
-www_domain_regex="www.${domain_regex}"
+www_domain_regex="www\\.${domain_regex}"
 
 # Write .env
 echo "SITE_ID=${site_id}"                   >  "${ENV_FILE}"
