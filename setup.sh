@@ -62,6 +62,17 @@ echo "DBPASS=${dbpass}"                     >> "${ENV_FILE}"
 echo "WEB_PORT=${web_port}"                 >> "${ENV_FILE}"
 echo "CACHE_KEY_SALT=${cache_key_salt}"     >> "${ENV_FILE}"
 
+# Ask about adding alias
+echo
+read -p "Add alias to ~/.bash_aliases (see README.md)? [y/N]: " add_alias_input
+
+case "$add_alias_input" in
+    [yY]|[yY][eE][sS])
+        echo "alias wp='docker compose run --rm wordpress-cli'" >> ~/.bash_aliases && source ~/.bash_aliases
+        ;;
+    *)                 use_alias=false ;;
+esac
+
 # Ask about Traefik usage
 echo
 read -p "Use Traefik (shared 'proxy' network, HTTPS routing)? [y/N]: " use_traefik_input
