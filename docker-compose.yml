@@ -94,7 +94,7 @@ services:
       CHOWN_GID : 34
       CHMOD_MODE : "0640"
       COMPRESS : zst
-      BACKUP_NAME_PREFIX : wordpress-pg
+      BACKUP_NAME_PREFIX : wordpress-mariadb
     volumes:
       - /var/backups:/backups
     depends_on:
