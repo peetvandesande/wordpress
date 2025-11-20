@@ -7,10 +7,6 @@ x-wordpress-common: &wordpress-common
       WORDPRESS_DB_USER: ${DBUSER}
       WORDPRESS_DB_PASSWORD: ${DBPASS}
       WORDPRESS_DB_NAME: ${DBNAME}
-      WORDPRESS_CONFIG_EXTRA: |
-        define('WP_REDIS_HOST', 'redis');
-        define('WP_CACHE_KEY_SALT', '${CACHE_KEY_SALT}');
-        define('WP_CACHE', true);
     volumes:
       - wordpress:/var/www/html
       - ./wordpress/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
@@ -60,7 +56,6 @@ services:
     restart: unless-stopped
     depends_on:
       - db
-      - redis
 
   # Declare wordpress-cli, but only run it on command
   wordpress-cli:
@@ -83,20 +78,25 @@ services:
     volumes:
       - db-data:/var/lib/mysql
 
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-
   mariadb-backup:
     image: peetvandesande/mariadb-backup
-    env_file:
-      - .env
+    deployment:
+      resources:
+        limits:
+          # Don't overconsume resources
+          cpus: '0.40'
+          memory: 128M
+        reservations:
+          # But ensure service isn't starved
+          cpus: '0.01'
+          memory: 8M
+    restart: unless-stopped
     environment:
       CHOWN_UID : 34
       CHOWN_GID : 34
       CHMOD_MODE : "0640"
       COMPRESS : zst
-      BACKUP_NAME_PREFIX : wordpress-pg
+      BACKUP_NAME_PREFIX : wordpress-mariadb
     volumes:
       - /var/backups:/backups
     depends_on:
@@ -104,6 +104,16 @@ services:
 
   app-backup:
     image: peetvandesande/file-backup
+    deployment:
+      resources:
+        limits:
+          # Don't overconsume resources
+          cpus: '0.40'
+          memory: 128M
+        reservations:
+          # But ensure service isn't starved
+          cpus: '0.01'
+          memory: 8M
     environment:
       CHOWN_UID : 34
       CHOWN_GID : 34
@@ -111,6 +121,7 @@ services:
       COMPRESS : zst
       BACKUP_PATHS : "/var/www/html /local"
       BACKUP_NAME_PREFIX : wordpress-data
+    restart: unless-stopped
     volumes:
       - ./nginx/conf.d:/local/nginx/conf.d:ro
       - ./nginx/nginx.conf:/local/nginx/nginx.conf:ro

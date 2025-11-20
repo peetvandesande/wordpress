@@ -4,10 +4,6 @@ randompw () {
     </dev/urandom tr -dc '12345!@#%qwertQWERTasdfgASDFGzxcvbZXCVB' | head -c16; echo ""
 }
 
-randomstring () {
-    </dev/urandom tr -dc '12345qwertQWERTasdfgASDFGzxcvbZXCVB' | head -c8; echo ""
-}
-
 ENV_FILE=${1:-".env"}
 
 if [ -f ${ENV_FILE} ]; then
@@ -27,7 +23,6 @@ dbname_default=wordpress
 dbuser_default=wp-user
 web_port_default=80
 dbpass=`randompw`
-cache_key_salt=`randomstring`
 
 read -p "Enter Site ID: [${site_id_default}]: " site_id
 site_id=${site_id:-$site_id_default}
@@ -48,7 +43,7 @@ domain=${domain#www.}
 # Regex-safe variants: replace "." with "\."
 domain_regex="${domain//./\\.}"
 www_domain="www.${domain}"
-www_domain_regex="www\.${domain_regex}"
+www_domain_regex="www\\.${domain_regex}"
 
 # Write .env
 echo "SITE_ID=${site_id}"                   >  "${ENV_FILE}"
@@ -60,7 +55,17 @@ echo "DBNAME=${dbname}"                     >> "${ENV_FILE}"
 echo "DBUSER=${dbuser}"                     >> "${ENV_FILE}"
 echo "DBPASS=${dbpass}"                     >> "${ENV_FILE}"
 echo "WEB_PORT=${web_port}"                 >> "${ENV_FILE}"
-echo "CACHE_KEY_SALT=${cache_key_salt}"     >> "${ENV_FILE}"
+
+# Ask about adding alias
+echo
+read -p "Add alias to ~/.bash_aliases (see README.md)? [y/N]: " add_alias_input
+
+case "$add_alias_input" in
+    [yY]|[yY][eE][sS])
+        echo "alias wp='docker compose run --rm wordpress-cli'" >> ~/.bash_aliases && source ~/.bash_aliases
+        ;;
+    *)                 use_alias=false ;;
+esac
 
 # Ask about Traefik usage
 echo
