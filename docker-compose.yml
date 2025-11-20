@@ -80,7 +80,7 @@ services:
 
   mariadb-backup:
     image: peetvandesande/mariadb-backup
-    deployment:
+    deploy:
       resources:
         limits:
           # Don't overconsume resources
@@ -104,7 +104,7 @@ services:
 
   app-backup:
     image: peetvandesande/file-backup
-    deployment:
+    deploy:
       resources:
         limits:
           # Don't overconsume resources
