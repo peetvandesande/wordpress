@@ -7,10 +7,6 @@ x-wordpress-common: &wordpress-common
       WORDPRESS_DB_USER: ${DBUSER}
       WORDPRESS_DB_PASSWORD: ${DBPASS}
       WORDPRESS_DB_NAME: ${DBNAME}
-      WORDPRESS_CONFIG_EXTRA: |
-        define('WP_REDIS_HOST', 'redis');
-        define('WP_CACHE_KEY_SALT', '${CACHE_KEY_SALT}');
-        define('WP_CACHE', true);
     volumes:
       - wordpress:/var/www/html
       - ./wordpress/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
@@ -60,7 +56,6 @@ services:
     restart: unless-stopped
     depends_on:
       - db
-      - redis
 
   # Declare wordpress-cli, but only run it on command
   wordpress-cli:
@@ -82,10 +77,6 @@ services:
     command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
     volumes:
       - db-data:/var/lib/mysql
-
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
 
   mariadb-backup:
     image: peetvandesande/mariadb-backup
