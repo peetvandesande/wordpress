@@ -1,5 +1,5 @@
 # wordpress
-Wordpress + MariaDB and Redis DB Cache containers with custom PHP settings  
+Wordpress + MariaDB and back-up containers with custom settings for large uploads and long caches.
 
 Much inspiration taken from [a blog on dchost.com](https://www.dchost.com/blog/en/wordpress-on-docker-compose-without-the-drama-nginx-mariadb-redis-persistent-volumes-auto%E2%80%91backups-and-a-calm-update-flow/).  
 
