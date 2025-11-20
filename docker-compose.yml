@@ -89,6 +89,16 @@ services:
 
   mariadb-backup:
     image: peetvandesande/mariadb-backup
+    deployment:
+      resources:
+        limits:
+          # Don't overconsume resources
+          cpus: '0.40'
+          memory: 128M
+        reservations:
+          # But ensure service isn't starved
+          cpus: '0.01'
+          memory: 8M
     environment:
       CHOWN_UID : 34
       CHOWN_GID : 34
@@ -102,6 +112,11 @@ services:
 
   app-backup:
     image: peetvandesande/file-backup
+    deployment:
+      resources:
+        limits:
+          # Don't overconsume resources
+          cpus: '0.40'
     environment:
       CHOWN_UID : 34
       CHOWN_GID : 34
