@@ -99,6 +99,7 @@ services:
           # But ensure service isn't starved
           cpus: '0.01'
           memory: 8M
+    restart: unless-stopped
     environment:
       CHOWN_UID : 34
       CHOWN_GID : 34
@@ -117,6 +118,11 @@ services:
         limits:
           # Don't overconsume resources
           cpus: '0.40'
+          memory: 128M
+        reservations:
+          # But ensure service isn't starved
+          cpus: '0.01'
+          memory: 8M
     environment:
       CHOWN_UID : 34
       CHOWN_GID : 34
@@ -124,6 +130,7 @@ services:
       COMPRESS : zst
       BACKUP_PATHS : "/var/www/html /local"
       BACKUP_NAME_PREFIX : wordpress-data
+    restart: unless-stopped
     volumes:
       - ./nginx/conf.d:/local/nginx/conf.d:ro
       - ./nginx/nginx.conf:/local/nginx/nginx.conf:ro
