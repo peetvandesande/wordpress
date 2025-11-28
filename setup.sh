@@ -21,6 +21,7 @@ fi
 site_id_default=example
 dbname_default=wordpress
 dbuser_default=wp-user
+web_ip_default=
 web_port_default=80
 dbpass=`randompw`
 
@@ -30,20 +31,38 @@ domain_default=${site_id}.com
 read -p "Enter domain name (don't include \"www.\") [${domain_default}]: " domain
 read -p "Enter database name [${dbname_default}]: " dbname
 read -p "Enter database user [${dbuser_default}]: " dbuser
+read -p "Enter webserver IP [${web_ip_default}]: " web_ip
 read -p "Enter webserver port [${web_port_default}]: " web_port
 
 domain=${domain:-$domain_default}
 dbname=${dbname:-$dbname_default}
 dbuser=${dbuser:-$dbuser_default}
+web_ip=${web_ip:-$web_ip_default}
 web_port=${web_port:-$web_port_default}
 
 # Strip leading "www." if user accidentally typed it
 domain=${domain#www.}
+# Strip trailing TLD if user accidentally typed it
+domain=${domain%%.*}
 
 # Regex-safe variants: replace "." with "\."
 domain_regex="${domain//./\\.}"
 www_domain="www.${domain}"
 www_domain_regex="www\\.${domain_regex}"
+
+# Compute HOST_BIND for docker compose (handles IPv4, IPv6, or empty IP)
+if [[ -n "$web_ip" ]]; then
+    # If IP contains ":", treat it as IPv6 and wrap in brackets
+    if [[ "$web_ip" == *:* ]]; then
+        host_ip="[$web_ip]"
+    else
+        host_ip="$web_ip"
+    fi
+    host_bind="${host_ip}:${web_port}"
+else
+    # No IP set: bind on all interfaces, only using the port
+    host_bind="${web_port}"
+fi
 
 # Write .env
 echo "SITE_ID=${site_id}"                   >  "${ENV_FILE}"
@@ -54,7 +73,7 @@ echo "WWW_DOMAIN_REGEX=${www_domain_regex}" >> "${ENV_FILE}"
 echo "DBNAME=${dbname}"                     >> "${ENV_FILE}"
 echo "DBUSER=${dbuser}"                     >> "${ENV_FILE}"
 echo "DBPASS=${dbpass}"                     >> "${ENV_FILE}"
-echo "WEB_PORT=${web_port}"                 >> "${ENV_FILE}"
+echo "HOST_BIND=${host_bind}"               >> "${ENV_FILE}"
 
 # Ask about adding alias
 echo
@@ -87,9 +106,6 @@ if [ -f "${compose_file}" ]; then
         sed -i -E '
 /^[[:space:]]*#[[:space:]]*labels:/ s/^([[:space:]]*)#[[:space:]]*(labels:)/\1\2/;
 /^[[:space:]]*#[[:space:]]*-[[:space:]]*".*traefik\..*"/ s/^([[:space:]]*)#[[:space:]]*(.*)/\1\2/;
-/^[[:space:]]*#[[:space:]]*-[[:space:]]*proxy[[:space:]]+# To communicate with Traefik/ s/^([[:space:]]*)#[[:space:]]*(.*)/\1\2/;
-/^[[:space:]]*#[[:space:]]*proxy:/ s/^([[:space:]]*)#[[:space:]]*(proxy:)/\1\2/;
-/^[[:space:]]*#[[:space:]]*external:[[:space:]]*true/ s/^([[:space:]]*)#[[:space:]]*(external:[[:space:]]*true)/\1\2/;
         ' "${compose_file}"
 
     else
@@ -98,9 +114,6 @@ if [ -f "${compose_file}" ]; then
         sed -i -E '
 /^[[:space:]]*labels:/ s/^([[:space:]]*)(labels:)/\1# \2/;
 /^[[:space:]]*-[[:space:]]*".*traefik\..*"/ s/^([[:space:]]*)(-.*)/\1# \2/;
-/^[[:space:]]*-[[:space:]]*proxy[[:space:]]+# To communicate with Traefik/ s/^([[:space:]]*)(-.*)/\1# \2/;
-/^[[:space:]]*proxy:/ s/^([[:space:]]*)(proxy:)/\1# \2/;
-/^[[:space:]]*external:[[:space:]]*true/ s/^([[:space:]]*)(external:[[:space:]]*true)/\1# \2/;
         ' "${compose_file}"
     fi
 else
