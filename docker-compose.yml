@@ -1,7 +1,5 @@
 # Common settings
 x-wordpress-common: &wordpress-common
-    env_file:
-      - .env
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: ${DBUSER}
@@ -15,8 +13,6 @@ services:
   nginx:
     image: nginx:mainline-alpine
     restart: unless-stopped
-    env_file:
-      - .env
     depends_on:
       - wordpress
     ports:
@@ -67,8 +63,6 @@ services:
   db:
     image: mariadb:11
     restart: unless-stopped
-    env_file:
-      - .env
     environment:
       MARIADB_DATABASE: ${DBNAME}
       MARIADB_USER: ${DBUSER}
@@ -91,8 +85,6 @@ services:
           cpus: '0.01'
           memory: 8M
     restart: unless-stopped
-    env_file:
-      - .env
     environment:
       MARIADB_DATABASE: ${DBNAME}
       MARIADB_USER: ${DBUSER}
@@ -119,8 +111,6 @@ services:
           # But ensure service isn't starved
           cpus: '0.01'
           memory: 8M
-    env_file:
-      - .env
     environment:
       CHOWN_UID : 34
       CHOWN_GID : 34
