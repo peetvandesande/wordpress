@@ -23,9 +23,6 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - wordpress:/var/www/html:ro
-    networks:
-      - default # To communicate within the stack
-      # - proxy   # To communicate with Traefik
     # labels:
       # - "traefik.enable=true"
       # - "traefik.docker.network=proxy"
@@ -50,6 +47,7 @@ services:
       # - "traefik.http.services.${SITE_ID}_wp.loadbalancer.server.port=80"
       # - "traefik.http.services.${SITE_ID}_wp.loadbalancer.server.scheme=http"
 
+  # Actual Wordpress application server
   wordpress:
     <<: *wordpress-common
     image: wordpress:php8.4-fpm
@@ -91,12 +89,17 @@ services:
           cpus: '0.01'
           memory: 8M
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
+      MARIADB_DATABASE: ${DBNAME}
+      MARIADB_USER: ${DBUSER}
+      MARIADB_PASSWORD: ${DBPASS}
       CHOWN_UID : 34
       CHOWN_GID : 34
       CHMOD_MODE : "0640"
       COMPRESS : zst
-      BACKUP_NAME_PREFIX : wordpress-mariadb
+      BACKUP_NAME_PREFIX : wordpress-mariadb-${SITE_ID}
     volumes:
       - /var/backups:/backups
     depends_on:
@@ -114,13 +117,18 @@ services:
           # But ensure service isn't starved
           cpus: '0.01'
           memory: 8M
+    env_file:
+      - .env
     environment:
       CHOWN_UID : 34
       CHOWN_GID : 34
       CHMOD_MODE : "0640"
       COMPRESS : zst
+      # Keep /local as the last entry of the backup paths to put those files
+      # at the end of the archive. This makes the restore process easier.
+      # You might not need all files from /local for the restore
       BACKUP_PATHS : "/var/www/html /local"
-      BACKUP_NAME_PREFIX : wordpress-data
+      BACKUP_NAME_PREFIX : wordpress-data-${SITE_ID}
     restart: unless-stopped
     volumes:
       - ./nginx/conf.d:/local/nginx/conf.d:ro
@@ -129,16 +137,7 @@ services:
       - ./.env:/local/.env:ro
       - wordpress:/var/www/html:ro
       - /var/backups:/backups
-    depends_on:
-      - wordpress
 
 volumes:
   wordpress:
   db-data:
-
-networks:
-  default:
-    driver: bridge
-# proxy:
-  # external: true
-
