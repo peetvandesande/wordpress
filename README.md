@@ -52,12 +52,12 @@ Backup is built-in using the respective file-backup and mariadb-backup container
 
 4. Restore the database\
 `docker compose exec -it mariadb-backup sh`\
-`restore /backups/wordpress-dbwordpress-mariadb-20260802.sql.zst`
+`restore /backups/wordpress-dbwordpress-mariadb-20260802.sql.zst`\
 `exit`
 
 5. Restore the files\
 `docker compose exec -it app-backup sh`\
-`tar xf wordpress-data-20260802.tar.zst var/`
+`tar xf wordpress-data-20260802.tar.zst var/`\
 `exit`
 
 6. Verify the site is working as expected
