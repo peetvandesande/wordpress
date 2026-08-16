@@ -36,3 +36,33 @@ For easy access to the WP-CLI, use an alias:
 ## Search and replace
 (like, when moving from test (old domain=http://example-test.com/) to production (new domain=https://example.com/)  
 `wp search-replace 'example-test' 'example' --dry-run`
+
+# Backup
+Backup is built-in using the respective file-backup and mariadb-backup containers. Make sure to mount the correct directory to store the backups.
+
+# Restore
+1. In the project root, extract the local files from the tarball
+`tar xf wordpress-data-20260802.tar.zst --strip-components=1 local/`
+
+2. Cut the ':ro' from the wordpress mount of the app-backup service definition in docker-compose.yml so it can write there
+`.     - wordpress:/var/www/html`
+
+3. Fire up the stack
+`docker compose up -d`
+
+4. Restore the database
+`docker compose exec -it mariadb-backup sh`
+`restore /backups/wordpress-dbwordpress-mariadb-20260802.sql.zst`
+`exit`
+
+5. Restore the files
+`docker compose exec -it app-backup sh`
+`tar xf wordpress-data-20260802.tar.zst var/`
+`exit`
+
+6. Verify the site is working as expected
+
+7. Bring the stack down, restore the read-only mounting of wordpress under app-backup:
+`.     - wordpress:/var/www/html:ro`
+
+8. Done
